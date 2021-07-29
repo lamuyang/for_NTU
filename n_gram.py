@@ -23,18 +23,21 @@ def trigram2freqdict(mytrigram):
     for (ch1,ch2,ch3) in mytrigram:
         mydict[(ch1,ch2,ch3)]=mydict.get((ch1,ch2,ch3),0)+1
     return mydict
-def freq2report(freqlist):
+def freq2report(freqlist,file_name):
     chs=str()
-    print('Char(s)\tCount')
-    print('=============')
-    for (token,num) in freqlist:
-        for ch in token:
-            chs=chs+ch
-        print(chs,'\t',num)
-        chs=''
+    # print('Char(s)\tCount')
+    # print('=============')
+    with open(file_name,"w") as fileobj:
+        for (token,num) in freqlist:
+            for ch in token:
+                chs=chs+" "+ch
+            # print(chs,'\t',num)
+            fileobj.write(f"{chs}\t{num}\n")
+            chs=''
+    print("done")
 def remove_punctuation(line):
     rule = re.compile("[^a-zA-Z0-9\\u4e00-\\u9fa5]")
-    line = rule.sub('',line)
+    line = rule.sub(' ',line)
     return line
 def auto_depunctuation(raw_list):
     new_list = []
@@ -64,22 +67,20 @@ for i in reference:
     big_fin.update(bigram2freqdict(list2bigram(i)))
     tri_fin.update(trigram2freqdict(list2trigram(i)))
 
-# chfreqsorted3=list()
-# for (ch,num) in chfreqsorted:
-#     if num > 1:
-#         chfreqsorted3.append((ch,num))  
 
 # print(big_fin)
 big_sorted = sorted(big_fin.items(), key=itemgetter(1), reverse=True)
 tri_sorted = sorted(tri_fin.items(), key=itemgetter(1), reverse=True)
 bi_over_than_one = []
 for (word,num) in big_sorted:
-    if num >10:
+    if num >1:
         bi_over_than_one.append((word,num))
 # print(bi_over_than_one)
-freq2report(bi_over_than_one)
-    # chfreqsorted3=list()
-    # for (ch,num) in chfreqsorted:
-    #     if num > 1:
-    #         chfreqsorted3.append((ch,num))    
-
+freq2report(bi_over_than_one,"./ngram_data/bi_data.txt")
+tri_over = []
+for (word,num) in tri_sorted:
+    if num >1:
+        tri_over.append((word,num))
+# print(bi_over_than_one)
+freq2report(tri_over,"./ngram_data/tri_data.txt")
+# print(tri_over)

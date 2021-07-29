@@ -1,6 +1,11 @@
 from ckiptagger import data_utils, construct_dictionary, WS, POS, NER
-import os
+import os,re
 import get_data
+
+def remove_punctuation(line):
+    rule = re.compile("[^a-zA-Z0-9\\u4e00-\\u9fa5]")
+    line = rule.sub(' ',line)
+    return line
 
 name = []
 keyword = []
@@ -24,10 +29,18 @@ def ws_save(list,name_of_thelist):
         recommend_dictionary = WIKI_dictionary,
     )
     del ws
-    print(word_sentence_list)
+    # print(word_sentence_list)
     final = []
     for i in word_sentence_list:
-        final.append(i)
+        new_i = []
+        for j in i:
+            j = remove_punctuation(j)
+            if j != "" and j != " " and j != "\n":
+                new_i.append(j)
+        final.append(new_i)
+    print(final)
+    # for i in word_sentence_list:
+    #     final.append(i)
     with open(name_of_thelist, 'wb') as fp:
         pickle.dump(final, fp)
     fp.close()
