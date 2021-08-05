@@ -70,14 +70,6 @@ ngram_reference = pkl_input.open_pkl("./Pkl_data/ngram_WS_reference.pkl")
 all_reference = pkl_input.open_pkl("./Pkl_data/all_WIKI_WS_reference.pkl")
 
 
-# name_dif_raw,name_dif_WIKI = write_dif(WIKI_name,all_name,"./dif/raw_WIKI_name_dif.txt")
-# abstract_dif_raw,abstract_dif_WIKI = write_dif(WIKI_abstract,all_abstract,"./dif/raw_WIKI_abstract_dif.txt")
-# reference_dif_raw,reference_dif_WIKI = write_dif(WIKI_reference,all_reference,"./dif/raw_WIKI_reference_dif.txt")
-
-# catch_dif(name_dif_raw,name_dif_WIKI,"./dif/all_catch_dif_name.txt")
-# catch_dif(abstract_dif_raw,abstract_dif_WIKI,"./dif/all_catch_dif_abstract.txt")
-# catch_dif(reference_dif_raw,reference_dif_WIKI,"./dif/all_catch_dif_reference.txt")
-
 name_dif_raw,name_dif_ngram = write_dif(raw_name,ngram_name,"./dif/raw_ngram_name_dif.txt")
 catch_dif(name_dif_raw,name_dif_ngram,"./dif/POINT_raw_ngram_name_dif.txt","./dif/short_raw_ngram_name_dif.txt")
 
