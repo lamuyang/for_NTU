@@ -51,8 +51,9 @@ WS_reference = stopword(pkl_input.open_pkl("./NewPklData/washed_WS_CKIP_WIKI_key
 # for i in WS_abstract:
 #     print(i)
 name_similaraty = []
-for i in range(1,len(WS_reference)):
+for i in range(0,len(WS_reference)):
+    temp = []
     for j in range(0,len(WS_name)):
-        name_similaraty.append(get_word_vector(WS_name[i],WS_name[j]))
-for i in name_similaraty:
-    print(i)
+        temp.append(get_word_vector(WS_name[i],WS_name[j]))
+    name_similaraty.append(temp)
+print(name_similaraty)
