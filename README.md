@@ -2,5 +2,5 @@
 
 ## 安裝pip套件
 ```
-pip install -r requirment.txt
+pip install -r requirement.txt
 ```
