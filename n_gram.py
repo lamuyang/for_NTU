@@ -30,7 +30,7 @@ def freq2report(freqlist,file_name):
     with open(file_name,"w") as fileobj:
         for (token,num) in freqlist:
             for ch in token:
-                chs=chs+" "+ch
+                chs=chs+" ("+ch+")"
             # print(chs,'\t',num)
             fileobj.write(f"{chs}\t{num}\n")
             chs=''
@@ -49,38 +49,41 @@ def auto_depunctuation(raw_list):
                 new_i.append(j)
         new_list.append(new_i)
     return new_list
-raw_name = pkl_input.open_pkl("./Pkl_data/WS_name.pkl")
-raw_abstract = pkl_input.open_pkl("./Pkl_data/WS_abstract.pkl")
-raw_reference = pkl_input.open_pkl("./Pkl_data/WS_reference.pkl")
+raw_name = pkl_input.open_pkl("./NewPklData/CKIP_WIKI_keyword_WS_reference.pkl")
+print(len(raw_name))
+print(raw_name[0])
+# raw_abstract = pkl_input.open_pkl("./Pkl_data/WS_abstract.pkl")
+# raw_reference = pkl_input.open_pkl("./Pkl_data/WS_reference.pkl")
 name = auto_depunctuation(raw_name)
-abstract = auto_depunctuation(raw_abstract)
-reference = auto_depunctuation(raw_reference)
+# abstract = auto_depunctuation(raw_abstract)
+# reference = auto_depunctuation(raw_reference)
 big_fin = {}
 tri_fin = {}
 for i in name:
     big_fin.update(bigram2freqdict(list2bigram(i)))
     tri_fin.update(trigram2freqdict(list2trigram(i)))
-for i in abstract:
-    big_fin.update(bigram2freqdict(list2bigram(i)))
-    tri_fin.update(trigram2freqdict(list2trigram(i)))
-for i in reference:
-    big_fin.update(bigram2freqdict(list2bigram(i)))
-    tri_fin.update(trigram2freqdict(list2trigram(i)))
+# for i in abstract:
+#     big_fin.update(bigram2freqdict(list2bigram(i)))
+#     tri_fin.update(trigram2freqdict(list2trigram(i)))
+# for i in reference:
+#     big_fin.update(bigram2freqdict(list2bigram(i)))
+#     tri_fin.update(trigram2freqdict(list2trigram(i)))
 
 
 # print(big_fin)
 big_sorted = sorted(big_fin.items(), key=itemgetter(1), reverse=True)
 tri_sorted = sorted(tri_fin.items(), key=itemgetter(1), reverse=True)
+print(big_sorted)
 bi_over_than_one = []
 for (word,num) in big_sorted:
     if num >1:
         bi_over_than_one.append((word,num))
-# print(bi_over_than_one)
-freq2report(bi_over_than_one,"./ngram_data/bi_data.txt")
+print(bi_over_than_one)
+freq2report(bi_over_than_one,"./ngram_data/bi_reference.txt")
 tri_over = []
 for (word,num) in tri_sorted:
     if num >1:
         tri_over.append((word,num))
 # print(bi_over_than_one)
-freq2report(tri_over,"./ngram_data/tri_data.txt")
+freq2report(tri_over,"./ngram_data/tri_reference.txt")
 # print(tri_over)

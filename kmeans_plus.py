@@ -1,7 +1,10 @@
 import re,random
 from gensim import corpora,models,similarities
 import pkl_input,get_data,descan
-stop_word = ["研究","探討","為","例","<<",">>","分析","比較","此","各","一些"]
+import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.cluster import DBSCAN
+stop_word = ["研究","探討","為","例","<<",">>","分析","比較","此","各","一些","使得","後來","很多","在於","我國","我們","of","at"]
 def stopword(raw_list):
     new_list = []
     for i in raw_list:
@@ -130,28 +133,43 @@ class KMeans:
 
         return cluster
 WS_conbine = get_blank_list(WS_conbine)
+# for i in WS_conbine:
+#     print(i)
 tfidf_vectorizer = TfidfVectorizer()
 tfidf = tfidf_vectorizer.fit_transform(WS_conbine)
 # print(tfidf)
 tfidf = tfidf.toarray()
-k = 1
-for k in range(1,11):
-    Kmeans_cluster = KMeans()
-    cluster_result = Kmeans_cluster.kmeans_plus_plus(tfidf, k)
-    # print(cluster_result)
-    cluster = [[] for _ in range(k)]
-    # print(cluster)
+print(tfidf)
+for i in tfidf:
+    print(i)
+# x = tfidf
+# clustering=DBSCAN(eps=0.3,min_samples=10).fit(x)
+# print(clustering.labels_)
+# plt.scatter(x[:,0],x[:,1],c=clustering.labels_)
+# label = clustering.fit_predict(x)
+# print(label)
 
-    for idx, c in enumerate(cluster_result):
-        cluster[int(c)].append(raw_name[idx])
+# plt.savefig("tem.png")
 
-    with open("temp_tot.txt","a") as file:
-        for c, result in enumerate(cluster):
-            # print('Cluster {}: {}'.format(c, ' '.join(result)))
-            file.write('\nCluster {}: {}\n'.format(c, ' ,'.join(result)))
-            temp = len(result)
-            file.write(f'以上包含{temp}項')
-        file.write(f'\n====================\n')
+
+# k = 1
+# for k in range(1,11):
+#     Kmeans_cluster = KMeans()
+#     cluster_result = Kmeans_cluster.kmeans_plus_plus(tfidf, k)
+#     # print(cluster_result)
+#     cluster = [[] for _ in range(k)]
+#     # print(cluster)
+
+#     for idx, c in enumerate(cluster_result):
+#         cluster[int(c)].append(raw_name[idx])
+
+#     with open("temp_tot.txt","a") as file:
+#         for c, result in enumerate(cluster):
+#             # print('Cluster {}: {}'.format(c, ' '.join(result)))
+#             file.write('\nCluster {}: {}\n'.format(c, ' ,'.join(result)))
+#             temp = len(result)
+#             file.write(f'以上包含{temp}項')
+#         file.write(f'\n====================\n')
 
 
 

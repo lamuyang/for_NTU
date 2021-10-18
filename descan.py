@@ -1,3 +1,4 @@
+from gensim import models
 import pkl_input
 from sklearn.decomposition import PCA
 from sklearn.decomposition import TruncatedSVD
@@ -46,93 +47,73 @@ def tfidf(data_list, max_df=0.8, min_df=2):
 
 def main_fun(main_list,eps = 0.5,min_samples = 5):
     tfidf_vectorizer, X_tfidf, tfidf_array, tfidf_T_array, terms = tfidf(main_list, max_df=0.8, min_df=2)
-
-    # t0 = time()
-
-    # vectorizer = TfidfVectorizer(max_df=0.5, max_features=40000,min_df=5,ngram_range=(1, 2),use_idf=True)
-
-    # X = vectorizer.fit_transform(WS_reference)
-
-    # print("完成所耗费时间： %fs" % (time() - t0))
-    # # print("样本数量: %d, 特征数量: %d" % X.shape)
-    # print()
-
-    # print('特征抽取完成！')
-
-    dbscan_clf = DBSCAN(eps, min_samples).fit(tfidf_array)
-    # print(all(dbscan_clf.labels_ == dbscan_clf.fit_predict(tfidf_array)))
-    # print(dbscan_clf.labels_)
-    # print(dbscan_clf.fit_predict(tfidf_array))
-
-
-
+    dbscan_clf = DBSCAN(eps, min_samples)
     frame = pd.DataFrame(tfidf_array)
-    frame['Cluster'] = dbscan_clf.fit_predict(tfidf_array)
-    frame['title'] = main_list
-    # print(frame['Cluster'].value_counts())
-
-    # print("-----------------------------------------------")
-    # print(frame.groupby('Cluster').agg({'Cluster':'count'}))
-
-    sectors = frame.groupby('Cluster')
-    sectors_len = len(sectors)
-
-    for ClusterN in range(0, sectors_len -1, 1):
-        print("===== Cluster {} =====".format(ClusterN))
-        ClusterN_index = list(sectors.get_group(ClusterN).index)
-        print(frame.loc[ClusterN_index].title)
-
-
-    n_clusters_ = len(set(dbscan_clf.labels_)) - (1 if -1 in dbscan_clf.labels_ else 0)
-    n_noise_ = list(dbscan_clf.labels_).count(-1)
-    print('聚类数：',n_clusters_)
-
-    print('噪点数：',n_noise_) 
-    print('噪聲比：',100*(n_noise_/237),"%")
-    print(F"eps:{eps}  min_samples:{min_samples}")
+    label = dbscan_clf.fit_predict(tfidf_array)
+    # print(tfidf_array)
+    print(label)
 
     import matplotlib.pyplot as plt
     plt.rcParams['font.sans-serif']=['Noto Sans CJK TC'] #用来正常显示中文标签
-    plt.rcParams['axes.unicode_minus']=False #用来正常显示负号
-    # %matplotlib inline
+    # plt.rcParams['axes.unicode_minus']=False #用来正常显示负号
 
-    unititleue_labels = set(dbscan_clf.labels_)
-    colors = [plt.cm.Spectral(each)
-            for each in np.linspace(0, 1, len(unititleue_labels))]
+    k = 3  # 此处k取 2*2 -1 
+    k_dist = select_MinPts(tfidf_array,k)
+    k_dist.sort()
+    plt.plot(np.arange(k_dist.shape[0]),k_dist[::-1])
+    eps = k_dist[::-1][15]
+    print(eps)
+    # plt.scatter(15,eps,color="r")
+    # plt.plot([0,15],[eps,eps],linestyle="--",color = "r")
+    # plt.plot([15,15],[0,eps],linestyle="--",color = "r")
+    # plt.show()
+    # # %matplotlib inline
+
+    # unititleue_labels = set(dbscan_clf.labels_)
+    # colors = [plt.cm.Spectral(each)
+    #         for each in np.linspace(0, 1, len(unititleue_labels))]
             
-    core_samples_mask = np.zeros_like(dbscan_clf.labels_, dtype=bool)
-    core_samples_mask[dbscan_clf.core_sample_indices_] = True
-    # https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJKtc-hinted.zip
+    # core_samples_mask = np.zeros_like(dbscan_clf.labels_, dtype=bool)
+    # core_samples_mask[dbscan_clf.core_sample_indices_] = True
+    # # https://noto-website-2.storage.googleapis.com/pkgs/NotoSansCJKtc-hinted.zip
 
-    svd = TruncatedSVD(15)
-    normalizer = Normalizer(copy=False)
-    lsa = make_pipeline(svd, normalizer)
+    # svd = TruncatedSVD(15)
+    # normalizer = Normalizer(copy=False)
+    # lsa = make_pipeline(svd, normalizer)
 
-    X = lsa.fit_transform(X_tfidf)
+    # X = lsa.fit_transform(X_tfidf)
 
-    for k, col in zip(unititleue_labels, colors):
-        if k == -1:
-            col = [0, 0, 0, 1]
+    # for k, col in zip(unititleue_labels, colors):
+    #     if k == -1:
+    #         col = [0, 0, 0, 1]
 
-        class_member_mask = (dbscan_clf.labels_ == k)
+    #     class_member_mask = (dbscan_clf.labels_ == k)
 
-        xy = X[class_member_mask & core_samples_mask]
-        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-                markeredgecolor='k', markersize=14)
+    #     xy = X[class_member_mask & core_samples_mask]
+    #     plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
+    #             markeredgecolor='k', markersize=14)
 
-        xy = X[class_member_mask & ~core_samples_mask]
-        plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
-                markeredgecolor='k', markersize=6)
+    #     xy = X[class_member_mask & ~core_samples_mask]
+    #     plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
+    #             markeredgecolor='k', markersize=6)
 
-    plt.title('大致聚类数: %d' % n_clusters_)
+    # plt.title('大致聚类数: %d' % n_clusters_)
     plt.savefig('py.png')
-    return 100*(n_noise_/237)
+    # return 100*(n_noise_/237)
     # db = DBSCAN(eps=0.2, min_samples=4).fit(X)
 
 
     # labels = db.labels_
 
     # print(labels)
+def select_MinPts(data,k):
+    k_dist = []
+    for i in range(data.shape[0]):
+        dist = (((data[i] - data)**2).sum(axis=1)**0.5)
+        dist.sort()
+        k_dist.append(dist[k])
+    return np.array(k_dist)
+
 def stopword(raw_list):
     new_list = []
     for i in raw_list:
@@ -150,8 +131,11 @@ WS_reference = get_blank_list(stopword(pkl_input.open_pkl("./NewPklData/washed_W
 
 
 # print(len(stopword(WS_name)))
+
+
 # main_fun(WS_reference,0.95, 2)
-print(WS_name[0])
+
+# print(WS_name[0])
 # eps = 0.01
 # min_samples = 2
 # num = 0

@@ -69,6 +69,6 @@ print(new_ws[9])
 print(len(new_ws[9]))
 
 # ”,&  ,
-# 為、例 
+# 為、例
 # 日、期
 # ——
